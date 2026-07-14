@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Canteen Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container"><a class="navbar-brand fw-bold" href="#">Desk2Dine</a><span class="text-white ms-auto fw-semibold">Canteen Portal</span></div>
+    </nav>
+    <div class="container mb-5" style="max-width: 900px;">
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
+    <li class="nav-item"><a class="nav-link active" href="/canteen/dashboard">Dashboard</a></li>
+    <li class="nav-item"><a class="nav-link" href="/canteen/all-orders">All Orders</a></li>
+    <li class="nav-item"><a class="nav-link" href="/canteen/pending-orders">Pending Orders</a></li>
+    <li class="nav-item"><a class="nav-link" href="/canteen/manage-items">Manage Items</a></li>
+     </ul>
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h4 class="fw-bold mb-4">Canteen Dashboard</h4>
+            <table class="table align-middle">
+                <thead class="table-primary"><tr><th>Statistic</th><th>Count</th><th>Sales</th></tr></thead>
+                <tbody>
+                    <tr><td>Total Orders</td><td th:text="${totalCount}">0</td><td th:text="'₹ ' + ${totalSales}">0</td></tr>
+                    <tr><td>Pending Orders</td><td><span class="badge bg-warning rounded-circle" th:text="${pendingCount}">0</span></td><td th:text="'₹ ' + ${pendingSales}">0</td></tr>
+                    <tr><td>Delivered Orders</td><td><span class="badge bg-success rounded-circle" th:text="${deliveredCount}">0</span></td><td th:text="'₹ ' + ${deliveredSales}">0</td></tr>
+                    <tr><td>Received Orders</td><td><span class="badge bg-info rounded-circle" th:text="${receivedCount}">0</span></td><td th:text="'₹ ' + ${receivedSales}">0</td></tr>
+                    <tr><td>Paid Orders</td><td><span class="badge bg-primary rounded-circle" th:text="${paidCount}">0</span></td><td th:text="'₹ ' + ${paidSales}">0</td></tr>
+                    <tr><td>Completed Orders</td><td><span class="badge bg-dark rounded-circle" th:text="${completedCount}">0</span></td><td><span class="badge bg-success px-2 py-1" th:text="'₹ ' + ${completedSales}">0</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

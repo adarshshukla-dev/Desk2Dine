@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Desk2Dine - Place Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Desk2Dine</a>
+            <span class="navbar-text text-white ms-auto fw-semibold">Faculty Portal</span>
+        </div>
+    </nav>
+    <div class="container mb-5" style="max-width: 800px;">
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
+            <li class="nav-item"><a class="nav-link active fw-semibold" href="/place-order">Place Order</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold" href="/my-orders">My Orders</a></li>
+        </ul>
+        
+        <form th:action="@{/order/submit}" method="POST">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="text-secondary fw-bold mb-3">Place New Order</h5>
+                <div class="alert alert-info border-0 rounded-3">Welcome, <strong class="text-primary" th:text="${facultyName}">Amol Sharma</strong></div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-muted">Delivery Location</label>
+                    <input type="text" name="location" class="form-control form-control-lg rounded-3" value="F-204" required>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="text-secondary fw-bold mb-4">Available Menu</h5>
+                <!-- Item 1 -->
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <div><h6 class="mb-1 fw-bold">Tea</h6><span class="text-success fw-semibold">₹ 10.0</span></div>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="number" name="teaQty" class="form-control text-center fw-bold rounded-3" value="0" min="0" style="width: 70px;">
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <div><h6 class="mb-1 fw-bold">Samosa</h6><span class="text-success fw-semibold">₹ 20.0</span></div>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="number" name="samosaQty" class="form-control text-center fw-bold rounded-3" value="0" min="0" style="width: 70px;">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-4 pt-2">
+                    <button type="submit" class="btn btn-success btn-lg px-5 rounded-3 fw-bold shadow-sm">Place Order</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

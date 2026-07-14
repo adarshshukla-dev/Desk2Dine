@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Order Action Matrix</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container"><a class="navbar-brand fw-bold" href="#">Desk2Dine</a><span class="text-white ms-auto fw-semibold">Canteen Portal</span></div>
+    </nav>
+    <div class="container mb-5" style="max-width: 800px;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="fw-bold text-secondary mb-3">Order Operations</h5>
+            <p><strong>Order ID :</strong> <span th:text="${order.id}">18</span></p>
+            <p><strong>Faculty Member :</strong> <span th:text="${order.facultyName}">Amit Girdharwal</span></p>
+            <p><strong>Delivery Location :</strong> <span th:text="${order.deliveryLocation}">F-211</span></p>
+            <p><strong>Status :</strong> <span class="badge bg-info px-3 py-2 rounded-pill" th:text="${order.status}">PAID</span></p>
+        </div>
+        
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+            <h5 class="fw-bold text-secondary mb-3">Ordered Items</h5>
+            <table class="table">
+                <thead class="table-primary text-white"><tr><th>Item</th><th>Price</th><th>Quantity</th><th>Amount</th></tr></thead>
+                <tbody>
+                    <tr th:each="i : ${order.items}">
+                        <td th:text="${i.name}">Tea</td>
+                        <td th:text="${i.price}">10.0</td>
+                        <td th:text="${i.quantity}">1.0</td>
+                        <td th:text="${i.amount}">10.0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold text-secondary mb-2">Bill Summary</h5>
+            <p class="fs-5">Total Amount: <strong th:text="'₹ ' + ${order.totalAmount}">110.0</strong></p>
+            <div th:if="${order.billNumber != null}" class="text-muted mb-3">
+                Bill No: <span th:text="${order.billNumber}">14</span> | Paid At: <span th:text="${order.paymentTime}">Time</span>
+            </div>
+
+            <!-- Dynamic operational action flow mapping matrix -->
+            <form th:if="${order.status == 'PLACED'}" th:action="@{'/canteen/order/deliver/' + ${order.id}}" method="POST">
+                <button type="submit" class="btn btn-primary btn-lg px-4 rounded-3 shadow-sm">Deliver Now</button>
+            </form>
+
+            <form th:if="${order.status == 'PAID'}" th:action="@{'/canteen/order/complete/' + ${order.id}}" method="POST">
+                <button type="submit" class="btn btn-success btn-lg px-4 rounded-3 shadow-sm">Complete Order</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
