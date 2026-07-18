@@ -1,57 +1,105 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><title>Manage Canteen Items</title>
+    <meta charset="UTF-8">
+    <title>Desk2Dine - Manage Canteen Items</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+
+    <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
-        <div class="container"><a class="navbar-brand fw-bold" href="#">Desk2Dine</a><span class="text-white ms-auto fw-semibold">Canteen Portal</span></div>
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/canteen/dashboard">Desk2Dine</a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text text-white fw-semibold">Canteen Portal (Admin)</span>
+                <a href="/logout" class="btn btn-sm btn-outline-light rounded-3 fw-bold">Logout</a>
+            </div>
+        </div>
     </nav>
+
+    <!-- Main Container Content -->
     <div class="container mb-5" style="max-width: 950px;">
+        
+        <!-- Navigation Tabs Menu Matrix -->
         <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
-            <li class="nav-item"><a class="nav-link" href="/canteen/dashboard">Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="/canteen/all-orders">All Orders</a></li>
-            <li class="nav-item"><a class="nav-link" href="/canteen/pending-orders">Pending Orders</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/canteen/manage-items">Manage Items</a></li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold" href="/canteen/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold" href="/canteen/all-orders">All Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold" href="/canteen/pending-orders">Pending Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active fw-semibold" href="/canteen/manage-items">Manage Items</a>
+            </li>
         </ul>
 
-        <!-- Sir Ke Jaisa Error Notification Alert Banner -->
+        <!-- Operational Error Notification Alert Banner -->
         <div th:if="${errorMessage != null}" class="alert alert-danger border-0 rounded-3 text-center fw-semibold mb-3" th:text="${errorMessage}">
-            Item can not be deleted.
+            Item cannot be deleted.
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 p-4">
+        <!-- Inventory Ledger Card Management -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <a href="/canteen/add-item" class="btn btn-primary fw-bold rounded-3 px-3 shadow-sm">+ Add New Item</a>
+                
                 <form th:action="@{/canteen/manage-items}" method="GET" class="d-flex gap-2">
                     <input type="text" name="search" th:value="${searchQuery}" class="form-control rounded-3" placeholder="Search item..." style="width: 250px;">
                     <button type="submit" class="btn btn-light border rounded-3 px-3">Search</button>
                 </form>
             </div>
 
-            <table class="table align-middle">
-                <thead class="table-primary text-white">
-                    <tr><th>ID</th><th>Item Name</th><th>Price (₹)</th><th>Status</th><th>Actions</th><th></th></tr>
-                </thead>
-                <tbody>
-                    <tr th:each="i : ${items}">
-                        <td class="fw-bold" th:text="${i.id}">1</td>
-                        <td th:text="${i.name}">Tea</td>
-                        <td th:text="${i.price}">10.0</td>
-                        <td>
-                            <span class="badge px-3 py-2 rounded-pill shadow-sm" th:classappend="${i.available ? 'bg-success' : 'bg-danger'}" th:text="${i.available ? 'Available' : 'Not Available'}">Available</span>
-                        </td>
-                        <td><a th:href="@{'/canteen/edit-item/' + ${i.id}}" class="btn btn-link text-decoration-none fw-semibold">Edit</a></td>
-                        <td>
-                            <form th:action="@{'/canteen/item/delete/' + ${i.id}}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm rounded-3 px-3">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Items Data Grid -->
+            <div class="table-responsive">
+                <table class="table align-middle table-hover">
+                    <thead class="table-primary text-white">
+                        <tr>
+                            <th>ID</th>
+                            <th>Item Name</th>
+                            <th>Price</th>
+                            <th>Status Matrix</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="i : ${items}">
+                            <td class="fw-bold" th:text="${i.id}">1</td>
+                            <td class="fw-semibold text-dark" th:text="${i.name}">Tea</td>
+                            <td class="fw-bold text-success" th:text="'₹ ' + ${i.price}">₹ 10.0</td>
+                            <td>
+                                <!-- Refined Integer-based (1/0) and Boolean Check Toggle Link aligned with SQLite Schema -->
+                                <a th:href="@{'/canteen/item/toggle-status/' + ${i.id}}" class="text-decoration-none">
+                                    <span class="badge px-3 py-2 rounded-pill shadow-sm text-uppercase" 
+                                          style="cursor: pointer;"
+                                          th:classappend="${i.available == 1 || i.available == true ? 'bg-success' : 'bg-danger'}" 
+                                          th:text="${i.available == 1 || i.available == true ? 'Available' : 'Not Available'}">Available</span>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a th:href="@{'/canteen/edit-item/' + ${i.id}}" class="btn btn-sm btn-outline-secondary rounded-3 px-3">Edit</a>
+                                    
+                                    <form th:action="@{'/canteen/item/delete/' + ${i.id}}" method="POST" style="display:inline;" 
+                                          onsubmit="return confirm('Are you sure you want to delete this menu item?');">
+                                        <button type="submit" class="btn btn-danger btn-sm rounded-3 px-3">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Empty items condition -->
+                        <tr th:if="${#lists.isEmpty(items)}">
+                            <td colspan="5" class="text-center text-muted py-4">No items listed in the canteen database registry matching parameters.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
 </body>
 </html>

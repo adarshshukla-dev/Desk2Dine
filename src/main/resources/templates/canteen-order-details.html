@@ -1,52 +1,111 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><title>Order Action Matrix</title>
+    <meta charset="UTF-8">
+    <title>Desk2Dine - Order Action Matrix</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+
+    <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
-        <div class="container"><a class="navbar-brand fw-bold" href="#">Desk2Dine</a><span class="text-white ms-auto fw-semibold">Canteen Portal</span></div>
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/canteen/dashboard">Desk2Dine</a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text text-white fw-semibold">Canteen Portal (Admin)</span>
+                <a href="/logout" class="btn btn-sm btn-outline-light rounded-3 fw-bold">Logout</a>
+            </div>
+        </div>
     </nav>
+
     <div class="container mb-5" style="max-width: 800px;">
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-            <h5 class="fw-bold text-secondary mb-3">Order Operations</h5>
-            <p><strong>Order ID :</strong> <span th:text="${order.id}">18</span></p>
-            <p><strong>Faculty Member :</strong> <span th:text="${order.facultyName}">Amit Girdharwal</span></p>
-            <p><strong>Delivery Location :</strong> <span th:text="${order.deliveryLocation}">F-211</span></p>
-            <p><strong>Status :</strong> <span class="badge bg-info px-3 py-2 rounded-pill" th:text="${order.status}">PAID</span></p>
+        
+        <!-- Back Navigation Pill -->
+        <div class="mb-3">
+            <a href="/canteen/dashboard" class="btn btn-sm btn-secondary rounded-3 px-3 shadow-sm">← Back to Dashboard</a>
+        </div>
+
+        <!-- Order Operations Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <h5 class="fw-bold text-secondary mb-3">Order Details</h5>
+            <p class="mb-2"><strong>Order ID :</strong> <span class="fw-bold text-primary" th:text="${order.id}">18</span></p>
+            <p class="mb-2"><strong>Faculty Member :</strong> <span th:text="${order.facultyName}">Amit Girdharwal</span></p>
+            <p class="mb-2"><strong>Delivery Location :</strong> <span th:text="${order.deliveryLocation}">F-211</span></p>
+            <p class="mb-0"><strong>Current Status :</strong> 
+                <span class="badge px-3 py-2 rounded-pill text-uppercase" 
+                      th:classappend="${order.status == 'COMPLETED' ? 'bg-dark' : 
+                                       (order.status == 'PAID' ? 'bg-success' : 
+                                       (order.status == 'PLACED' ? 'bg-primary' : 
+                                       (order.status == 'DELIVERED' ? 'bg-warning text-dark' : 
+                                       (order.status == 'RECEIVED' ? 'bg-info text-dark' : 'bg-secondary'))))}"
+                      th:text="${order.status}">PAID</span>
+            </p>
         </div>
         
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+        <!-- Ordered Items Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
             <h5 class="fw-bold text-secondary mb-3">Ordered Items</h5>
-            <table class="table">
-                <thead class="table-primary text-white"><tr><th>Item</th><th>Price</th><th>Quantity</th><th>Amount</th></tr></thead>
-                <tbody>
-                    <tr th:each="i : ${order.items}">
-                        <td th:text="${i.name}">Tea</td>
-                        <td th:text="${i.price}">10.0</td>
-                        <td th:text="${i.quantity}">1.0</td>
-                        <td th:text="${i.amount}">10.0</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-primary text-white">
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="i : ${order.items}">
+                            <td class="fw-semibold" th:text="${i.name}">Tea</td>
+                            <td th:text="'₹ ' + ${i.price}">10.0</td>
+                            <td th:text="${i.quantity}">1.0</td>
+                            <td class="fw-bold text-dark" th:text="'₹ ' + ${i.amount}">10.0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 p-4">
+        <!-- Bill Summary & Action Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <h5 class="fw-bold text-secondary mb-2">Bill Summary</h5>
-            <p class="fs-5">Total Amount: <strong th:text="'₹ ' + ${order.totalAmount}">110.0</strong></p>
-            <div th:if="${order.billNumber != null}" class="text-muted mb-3">
-                Bill No: <span th:text="${order.billNumber}">14</span> | Paid At: <span th:text="${order.paymentTime}">Time</span>
+            <p class="fs-4 fw-bold text-success mb-3">Total Amount: <span th:text="'₹ ' + ${order.totalAmount}">₹ 110.0</span></p>
+            
+            <!-- Conditional Details Log -->
+            <div th:if="${order.billNumber != null}" class="alert alert-secondary border-0 rounded-3 mb-4 small">
+                <strong>Bill No:</strong> <span th:text="${order.billNumber}">14</span>
+                <span th:if="${order.paymentTime != null}"> | <strong>Paid At:</strong> <span th:text="${order.paymentTime}">Time</span></span>
             </div>
 
-            <!-- Dynamic operational action flow mapping matrix -->
-            <form th:if="${order.status == 'PLACED'}" th:action="@{'/canteen/order/deliver/' + ${order.id}}" method="POST">
-                <button type="submit" class="btn btn-primary btn-lg px-4 rounded-3 shadow-sm">Deliver Now</button>
-            </form>
+            <!-- DYNAMIC OPERATIONAL ACTION MATRIX CONTROLS -->
+            <div class="d-flex gap-2">
+                <!-- 1. PLACED Status -> Deliver Action -->
+                <form th:if="${order.status == 'PLACED'}" th:action="@{'/canteen/order/deliver/' + ${order.id}}" method="POST">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 rounded-3 fw-bold shadow-sm">Deliver Now</button>
+                </form>
 
-            <form th:if="${order.status == 'PAID'}" th:action="@{'/canteen/order/complete/' + ${order.id}}" method="POST">
-                <button type="submit" class="btn btn-success btn-lg px-4 rounded-3 shadow-sm">Complete Order</button>
-            </form>
+                <!-- 2. RECEIVED Status -> Generate Bill Action -->
+                <form th:if="${order.status == 'RECEIVED'}" th:action="@{'/canteen/order/bill/' + ${order.id}}" method="POST">
+                    <button type="submit" class="btn btn-warning btn-lg px-4 rounded-3 fw-bold text-dark shadow-sm">Generate Bill</button>
+                </form>
+
+                <!-- 3. PAID Status -> Complete Order Action -->
+                <form th:if="${order.status == 'PAID'}" th:action="@{'/canteen/order/complete/' + ${order.id}}" method="POST">
+                    <button type="submit" class="btn btn-success btn-lg px-4 rounded-3 fw-bold shadow-sm">Complete Order</button>
+                </form>
+                
+                <!-- 4. Default Safe State -->
+                <div th:if="${order.status == 'DELIVERED'}" class="text-muted small italic">
+                    * Waiting for the faculty member to acknowledge delivery.
+                </div>
+                <div th:if="${order.status == 'BILLED'}" class="text-muted small italic">
+                    * Bill generated successfully. Waiting for faculty payment.
+                </div>
+                <div th:if="${order.status == 'COMPLETED'}" class="text-success small fw-semibold">
+                    ✓ This order lifecycle is fully completed.
+                </div>
+            </div>
         </div>
     </div>
 </body>

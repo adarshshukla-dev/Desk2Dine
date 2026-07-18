@@ -6,19 +6,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+
+    <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">Desk2Dine</a>
-            <span class="navbar-text text-white ms-auto fw-semibold">Faculty Portal</span>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text text-white fw-semibold" th:text="'Active Session: ' + ${facultyName}">Active Session: Guest</span>
+                <a href="/logout" class="btn btn-sm btn-outline-light rounded-3 fw-bold">Logout</a>
+            </div>
         </div>
     </nav>
+
+    <!-- Main Content Area -->
     <div class="container mb-5" style="max-width: 900px;">
+        
+        <!-- Navigation Tabs -->
         <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
             <li class="nav-item"><a class="nav-link fw-semibold" href="/place-order">Place Order</a></li>
             <li class="nav-item"><a class="nav-link active fw-semibold" href="/my-orders">My Orders</a></li>
         </ul>
-        <div class="card border-0 shadow-sm rounded-4 p-4">
-            <h4 class="fw-bold mb-4 text-dark">My Orders</h4>
+
+        <!-- Orders Table Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h4 class="fw-bold mb-4 text-dark">My Orders History</h4>
+            
             <div class="table-responsive">
                 <table class="table align-middle table-hover">
                     <thead class="table-primary text-white">
@@ -26,6 +38,7 @@
                             <th>Order ID</th>
                             <th>Order Time</th>
                             <th>Delivery Location</th>
+                            <th>Total Amount</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -35,23 +48,30 @@
                             <td class="fw-bold" th:text="${ord.id}">11</td>
                             <td class="text-muted" th:text="${ord.orderTime}">27-Jun-2026</td>
                             <td th:text="${ord.deliveryLocation}">F-204</td>
+                            <td class="fw-bold text-success" th:text="'₹ ' + ${ord.totalAmount}">₹ 0.0</td>
                             <td>
                                 <span class="badge px-3 py-2 rounded-pill shadow-sm" 
-                                      th:classappend="${ord.status == 'PAID' ? 'bg-success' : (ord.status == 'PLACED' ? 'bg-secondary' : 'bg-primary')}" 
+                                      th:classappend="${ord.status == 'PAID' || ord.status == 'COMPLETED' ? 'bg-success' : (ord.status == 'PLACED' ? 'bg-secondary' : (ord.status == 'DELIVERED' ? 'bg-warning' : 'bg-primary'))}" 
                                       th:text="${ord.status}">PLACED</span>
                             </td>
                             <td>
                                 <a th:href="@{'/order-details/' + ${ord.id}}" class="btn btn-outline-primary btn-sm px-3 rounded-3 shadow-sm me-2">View Details</a>
                                 
-                                <form th:if="${ord.status == 'PLACED'}" th:action="@{'/order/receive/' + ${ord.id}}" method="POST" style="display:inline;">
+                                <form th:if="${ord.status == 'DELIVERED'}" th:action="@{'/order/receive/' + ${ord.id}}" method="POST" style="display:inline;">
                                     <button type="submit" class="btn btn-warning btn-sm px-3 rounded-3 text-white fw-semibold shadow-sm">Mark as Received</button>
                                 </form>
                             </td>
+                        </tr>
+                        
+                        <!-- Agar koi order na ho tab ke liye empty state rows -->
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="6" class="text-center text-muted py-4">No active order history log available for your profile.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
 </body>
 </html>

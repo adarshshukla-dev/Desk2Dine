@@ -1,39 +1,90 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><title>All Orders</title>
+    <meta charset="UTF-8">
+    <title>Desk2Dine - All Orders</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+
+    <!-- Top Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
-        <div class="container"><a class="navbar-brand fw-bold" href="#">Desk2Dine</a><span class="text-white ms-auto fw-semibold">Canteen Portal</span></div>
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Desk2Dine</a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text text-white fw-semibold">Canteen Portal (Admin)</span>
+                <a href="/logout" class="btn btn-sm btn-outline-light rounded-3 fw-bold">Logout</a>
+            </div>
+        </div>
     </nav>
+
+    <!-- Main Container Content -->
     <div class="container mb-5" style="max-width: 950px;">
+        
+        <!-- Navigation Tabs Matrix (With highlighted All Orders) -->
         <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
-    <li class="nav-item"><a class="nav-link active" href="/canteen/dashboard">Dashboard</a></li>
-    <li class="nav-item"><a class="nav-link" href="/canteen/all-orders">All Orders</a></li>
-    <li class="nav-item"><a class="nav-link" href="/canteen/pending-orders">Pending Orders</a></li>
-    <li class="nav-item"><a class="nav-link" href="/canteen/manage-items">Manage Items</a></li>
-         </ul>
-        <div class="card border-0 shadow-sm rounded-4 p-4">
-            <h4 class="fw-bold mb-4">All Orders</h4>
-            <table class="table align-middle table-hover">
-                <thead class="table-primary text-white">
-                    <tr><th>Order ID</th><th>Order Time</th><th>Faculty Member</th><th>Delivery Location</th><th>Cost</th><th>Status</th><th>Action</th></tr>
-                </thead>
-                <tbody>
-                    <tr th:each="o : ${orders}">
-                        <td class="fw-bold" th:text="${o.id}">11</td>
-                        <td th:text="${o.orderTime}">Time</td>
-                        <td th:text="${o.facultyName}">Name</td>
-                        <td th:text="${o.deliveryLocation}">F-204</td>
-                        <td th:text="'₹ ' + ${o.totalAmount}">0.0</td>
-                        <td><span class="badge px-3 py-2 rounded-pill shadow-sm" th:classappend="${o.status == 'COMPLETED' ? 'bg-success' : (o.status == 'PLACED' ? 'bg-primary' : 'bg-warning')}" th:text="${o.status}">STATUS</span></td>
-                        <td><a th:href="@{'/canteen/order-details/' + ${o.id}}" class="btn btn-primary btn-sm rounded-3">View Details</a></td>
-                    </tr>
-                </tbody>
-            </table>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold" href="/canteen/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active fw-semibold" href="/canteen/all-orders">All Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold" href="/canteen/pending-orders">Pending Orders</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-semibold" href="/canteen/manage-items">Manage Items</a>
+            </li>
+        </ul>
+
+        <!-- Data Grid Ledger Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <h4 class="fw-bold mb-4 text-dark">Master Orders Ledger</h4>
+            
+            <div class="table-responsive">
+                <table class="table align-middle table-hover">
+                    <thead class="table-primary text-white">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Order Time</th>
+                            <th>Faculty Member</th>
+                            <th>Delivery Location</th>
+                            <th>Cost</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="o : ${orders}">
+                            <td class="fw-bold" th:text="${o.id}">11</td>
+                            <td class="text-muted" th:text="${o.orderTime}">Time</td>
+                            <td class="fw-semibold" th:text="${o.facultyName}">Name</td>
+                            <td th:text="${o.deliveryLocation}">F-204</td>
+                            <td class="fw-bold text-success" th:text="'₹ ' + ${o.totalAmount}">₹ 0.0</td>
+                            <td>
+                                <!-- Status Badges Conditional Rendering Matrix aligned with DB States -->
+                                <span class="badge px-3 py-2 rounded-pill shadow-sm text-uppercase" 
+                                      th:classappend="${o.status == 'COMPLETED' ? 'bg-dark' : 
+                                                       (o.status == 'PAID' ? 'bg-success' : 
+                                                       (o.status == 'PLACED' ? 'bg-primary' : 
+                                                       (o.status == 'DELIVERED' ? 'bg-warning text-dark' : 
+                                                       (o.status == 'RECEIVED' ? 'bg-info text-dark' : 'bg-secondary'))))}" 
+                                      th:text="${o.status}">STATUS</span>
+                            </td>
+                            <td>
+                                <a th:href="@{'/canteen/order-details/' + ${o.id}}" class="btn btn-outline-primary btn-sm rounded-3 px-3 shadow-sm">View Details</a>
+                            </td>
+                        </tr>
+                        
+                        <!-- Empty list handler -->
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="7" class="text-center text-muted py-4">No order records found in the database system logs.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
 </body>
 </html>
