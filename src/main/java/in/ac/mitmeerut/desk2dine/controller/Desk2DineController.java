@@ -3,6 +3,7 @@ package in.ac.mitmeerut.desk2dine.controller;
 import in.ac.mitmeerut.desk2dine.entity.Order;
 import in.ac.mitmeerut.desk2dine.entity.OrderItem;
 import in.ac.mitmeerut.desk2dine.repository.OrderRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,24 +25,86 @@ public class Desk2DineController {
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
+    // ================= ☁️ CLOUD DATABASE BOOTSTRAP INITIALIZER =================
+    @PostConstruct
+    public void initDatabaseSchemaAndData() {
+        try {
+            // Render/Local environment check - Auto create tables if missing with wallet_balance field included
+            jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS faculties (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name TEXT, " +
+                    "email TEXT UNIQUE, " +
+                    "password TEXT, " +
+                    "wallet_balance REAL DEFAULT 0.0)");
+
+            jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS canteen_menu_items (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "name TEXT UNIQUE, " +
+                    "price REAL, " +
+                    "available INTEGER)");
+
+            // Default Faculty Account Data Injection with wallet_balance safety parameter
+            Integer facultyCount = jdbcTemplate.queryForObject("SELECT count(*) FROM faculties WHERE email = ?", Integer.class, "amol.sharma@mitmeerut.ac.in");
+            if (facultyCount == 0) {
+                jdbcTemplate.update("INSERT INTO faculties (name, email, password, wallet_balance) VALUES (?, ?, ?, ?)", 
+                        "Amol Sharma", "amol.sharma@mitmeerut.ac.in", "password123", 0.0);
+            }
+
+            // Default Menu Dataset Injection
+            Integer menuCount = jdbcTemplate.queryForObject("SELECT count(*) FROM canteen_menu_items", Integer.class);
+            if (menuCount == 0) {
+                jdbcTemplate.update("INSERT INTO canteen_menu_items (name, price, available) VALUES (?, ?, ?)", "Tea", 10.0, 1);
+                jdbcTemplate.update("INSERT INTO canteen_menu_items (name, price, available) VALUES (?, ?, ?)", "Samosa", 20.0, 1);
+                jdbcTemplate.update("INSERT INTO canteen_menu_items (name, price, available) VALUES (?, ?, ?)", "Coffee", 30.0, 1);
+                jdbcTemplate.update("INSERT INTO canteen_menu_items (name, price, available) VALUES (?, ?, ?)", "Burger", 50.0, 1);
+            }
+            System.out.println(">>> [Desk2Dine Engine] Database Bootstrap Successful! <<<");
+        } catch (Exception e) {
+            System.err.println(">>> [Desk2Dine Engine] Database Initialization Skipped: " + e.getMessage());
+        }
+    }
+
     // ================= 🏠 PUBLIC HOME & BRAND LANDING PAGE =================
 
     @GetMapping("/")
     public String indexPage(HttpSession session) {
-        // Active dynamic sessions ko check karke automatic standard portal router par target bypass loop lagaya hai
-        if (session.getAttribute("scopedFaculty") != null) {
-            return "redirect:/place-order";
-        } else if (session.getAttribute("canteenLoggedIn") != null) {
-            return "redirect:/canteen/dashboard";
-        }
-        return "index"; // Render index.html marketing/introductory deck webpage
+        if (session.getAttribute("scopedFaculty") != null) return "redirect:/place-order";
+        if (session.getAttribute("canteenLoggedIn") != null) return "redirect:/canteen/dashboard";
+        return "index";
     }
 
     // ================= 🔑 REAL DATABASE AUTHENTICATION =================
 
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage() { 
         return "login"; 
+    }
+
+    @GetMapping("/signup")
+    public String signupPage() { 
+        return "signup"; 
+    }
+
+    @PostMapping("/auth/signup")
+    public String handleSignup(@RequestParam("name") String name, 
+                               @RequestParam("email") String email, 
+                               @RequestParam("password") String password, 
+                               Model model) {
+        if (!email.toLowerCase().endsWith("@mitmeerut.ac.in")) {
+            model.addAttribute("signupError", "Registration Denied! Only college emails (@mitmeerut.ac.in) allowed.");
+            return "signup";
+        }
+        try {
+            // FIXED: Added wallet_balance query parameter to satisfy NOT NULL database rule constraint
+            String sql = "INSERT INTO faculties (name, email, password, wallet_balance) VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, name, email, password, 0.0);
+            
+            model.addAttribute("signupSuccess", "Account created successfully! Please sign in below.");
+            return "login";
+        } catch (Exception e) {
+            model.addAttribute("signupError", "Registration failed due to: " + e.getMessage());
+            return "signup";
+        }
     }
 
     @PostMapping("/auth/login")
@@ -50,7 +113,6 @@ public class Desk2DineController {
                               @RequestParam("role") String role, 
                               HttpSession session, Model model) {
         
-        // 1. CANTEEN PORTAL SECURITY MATRIX
         if ("CANTEEN".equalsIgnoreCase(role)) {
             if ("admin@desk2dine.com".equalsIgnoreCase(email) && "admin123".equals(password)) {
                 session.setAttribute("canteenLoggedIn", true);
@@ -61,7 +123,6 @@ public class Desk2DineController {
             }
         }
 
-        // 2. FACULTY PORTAL SECURITY MATRIX WITH @mitmeerut.ac.in DOMAIN CONSTRAINT
         if ("FACULTY".equalsIgnoreCase(role)) {
             if (!email.toLowerCase().endsWith("@mitmeerut.ac.in")) {
                 model.addAttribute("loginError", "Access Denied! Only college emails (@mitmeerut.ac.in) allowed.");
@@ -69,7 +130,6 @@ public class Desk2DineController {
             }
 
             try {
-                // Fetch details from the 'faculties' table inside your desk2dine.db
                 String sql = "SELECT name FROM faculties WHERE email = ? AND password = ?";
                 List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, email, password);
                 
@@ -92,9 +152,9 @@ public class Desk2DineController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session) { 
         session.invalidate(); 
-        return "redirect:/"; // Session validation expire hote hi standard return home page layout par reverse karega
+        return "redirect:/"; 
     }
 
     // ================= FACULTY PORTAL FLOW =================
@@ -102,14 +162,13 @@ public class Desk2DineController {
     @GetMapping("/place-order")
     public String placeOrderPage(Model model, HttpSession session) {
         String activeFaculty = (String) session.getAttribute("scopedFaculty");
-        if (activeFaculty == null) return "redirect:/login"; // Force real login intercept
+        if (activeFaculty == null) return "redirect:/login";
 
-        // 🍕 REAL DATABASE FETCH: Fetching active menu directly from 'canteen_menu_items' table
         String sql = "SELECT id, name, price, available FROM canteen_menu_items";
         List<Map<String, Object>> menuItemsFromDB = jdbcTemplate.queryForList(sql);
 
         model.addAttribute("facultyName", activeFaculty); 
-        model.addAttribute("menuItems", menuItemsFromDB); // Inject real dynamic dataset to Thymeleaf
+        model.addAttribute("menuItems", menuItemsFromDB); 
         return "place-order";
     }
 
@@ -126,7 +185,6 @@ public class Desk2DineController {
             return "redirect:/place-order?error=empty";
         }
 
-        // Database logic tracking for dynamic items submission
         List<OrderItem> itemsList = new ArrayList<>();
         double total = 0;
 
@@ -135,13 +193,11 @@ public class Desk2DineController {
             if (qty > 0) {
                 long currentId = itemIds.get(i);
                 
-                // Real DB Validation check for order submission integrity
                 String sql = "SELECT name, price, available FROM canteen_menu_items WHERE id = ?";
                 List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, currentId);
                 
                 if (!rows.isEmpty()) {
                     Map<String, Object> itemData = rows.get(0);
-                    // Checking dynamic integer/boolean state from SQLite database mapping
                     Object availObj = itemData.get("available");
                     boolean isAvailable = false;
                     if (availObj instanceof Number) {
