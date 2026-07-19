@@ -2,86 +2,188 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desk2Dine - Smart Campus Dining</title>
+    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .hero-section {
-            background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
-            color: white;
-            padding: 100px 0;
-            border-bottom-left-radius: 50px;
-            border-bottom-right-radius: 50px;
+        body {
+            font-family: 'Okra', sans-serif;
+            background-color: #ffffff;
+            color: #1f1f1f;
         }
+
+        .global-nav {
+            background-color: #ffffff;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf1f7;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .global-nav .navbar-brand {
+            color: #000000 !important;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .global-nav .navbar-brand span {
+            color: #fcae1a;
+        }
+        .btn-nav-action {
+            background-color: #0c831f;
+            color: #ffffff !important;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .btn-nav-action:hover {
+            background-color: #0b721b;
+        }
+
+        .hero-section {
+            background-color: #fcfbfa;
+            padding: 80px 0;
+            border-bottom: 1px solid #edf1f7;
+        }
+        .hero-section h1 {
+            font-weight: 800;
+            color: #000000;
+            font-size: 3rem;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+        .btn-hero-solid {
+            background-color: #0c831f;
+            color: #ffffff !important;
+            font-weight: 700;
+            padding: 14px 40px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1.05rem;
+            box-shadow: 0 4px 12px rgba(12, 131, 31, 0.2);
+        }
+        .btn-hero-solid:hover {
+            background-color: #0b721b;
+        }
+
+        .hero-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero-image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #000000;
+            font-size: 1.6rem;
+            margin-bottom: 24px;
+        }
+
         .feature-card {
-            transition: transform 0.2s;
+            background-color: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px !important;
+            padding: 24px;
+            transition: box-shadow 0.2s, border-color 0.2s;
         }
         .feature-card:hover {
-            transform: translateY(-5px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            border-color: #0c831f;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+        .feature-card h5 {
+            font-weight: 700;
+            color: #1f1f1f;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+
+        .global-footer {
+            background-color: #ffffff;
+            color: #666666;
+            padding: 30px 0;
+            font-size: 0.9rem;
+            border-top: 1px solid #edf1f7;
+            margin-top: 80px;
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
-    <!-- Top Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <nav class="navbar global-nav">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-3" href="#">Desk2Dine</a>
-            <a href="/login" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm">Go to Portal</a>
+            <a class="navbar-brand" href="#">Desk<span>2</span>Dine</a>
+            <a href="/login" class="btn-nav-action">Login</a>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <div class="hero-section text-center shadow">
+    <div class="hero-section">
         <div class="container">
-            <h1 class="display-3 fw-bold mb-3">Skip the Canteen Queue!</h1>
-            <p class="lead fs-4 mb-5 text-white-50">Delicious food delivered directly to your cabin or desk, seamlessly.</p>
-            <div class="d-flex justify-content-center gap-3">
-                <a href="/login" class="btn btn-light btn-lg px-5 rounded-pill fw-bold text-primary shadow">Order Food Now</a>
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 text-lg-start text-center">
+                    <h1 class="mb-3">Skip the Canteen Queue!</h1>
+                    <p class="lead fs-5 mb-4 text-muted">Delicious food delivered directly to your cabin or desk, seamlessly.</p>
+                    <a href="/login" class="btn-hero-solid">Order Food Now</a>
+                </div>
+                <div class="col-lg-6 hero-image-container">
+                    <img src="https://res.cloudinary.com/dp2olwtzp/image/upload/v1745229317/cld-sample-4.jpg" alt="Delicious Food Presentation">
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- What is Desk2Dine & Features Section -->
-    <div class="container my-5 py-4">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold text-dark">What is Desk2Dine?</h2>
-            <p class="text-muted mx-auto" style="max-width: 650px;">
+    <div class="container my-5">
+        <div class="mb-5">
+            <h2 class="section-title">What is Desk2Dine?</h2>
+            <p class="text-muted fs-5" style="line-height: 1.6; max-width: 850px;">
                 Desk2Dine is an ecosystem designed for college faculties and campus canteens. It bridges the gap between your desk and the kitchen, allowing you to browse real-time available menus, place orders instantly, track processing states, and manage digital payments without waiting in lines.
             </p>
         </div>
 
+        <h2 class="section-title">Why use Desk2Dine?</h2>
         <div class="row g-4 justify-content-center">
-            <!-- Feature 1 -->
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 feature-card text-center">
-                    <div class="fs-1 text-primary mb-3">🍔</div>
-                    <h5 class="fw-bold">Live Dynamic Menu</h5>
+                <div class="card h-100 feature-card">
+                    <div class="feature-icon">🍔</div>
+                    <h5>Live Dynamic Menu</h5>
                     <p class="text-muted small mb-0">Browse real-time items directly synchronized from the canteen database registry status.</p>
                 </div>
             </div>
-            <!-- Feature 2 -->
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 feature-card text-center">
-                    <div class="fs-1 text-success mb-3">📍</div>
-                    <h5 class="fw-bold">Desk Delivery</h5>
+                <div class="card h-100 feature-card">
+                    <div class="feature-icon">📍</div>
+                    <h5>Desk Delivery</h5>
                     <p class="text-muted small mb-0">Specify your department cabin number and receive hot meals without stepping out of your workspace.</p>
                 </div>
             </div>
-            <!-- Feature 3 -->
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 feature-card text-center">
-                    <div class="fs-1 text-warning mb-3">⚡</div>
-                    <h5 class="fw-bold">State Management</h5>
+                <div class="card h-100 feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h5>State Management</h5>
                     <p class="text-muted small mb-0">Follow your orders from placement, billing generation, to final payment execution workflows.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white-50 py-4 mt-5 text-center">
+    <footer class="global-footer text-center">
         <div class="container">
-            <small>&copy; 2026 Desk2Dine Campus Automation Portal. All rights reserved.</small>
+            <span>© 2026 Desk2Dine Campus Automation Portal. All rights reserved.</span>
         </div>
     </footer>
 

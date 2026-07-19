@@ -2,45 +2,216 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Desk2Dine - Add New Item</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk2Dine - All Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+    <style>
+        body {
+            font-family: 'Okra', sans-serif;
+            background-color: #fcfbfa;
+            color: #1f1f1f;
+        }
 
-    <div class="container mt-5" style="max-width: 600px;">
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            <h4 class="fw-bold mb-4 text-dark">Add New Canteen Item</h4>
+        .global-nav {
+            background-color: #ffffff;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf1f7;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .global-nav .navbar-brand {
+            color: #000000 !important;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+        .global-nav .navbar-brand span {
+            color: #fcae1a;
+        }
+        
+        .btn-nav-logout {
+            border: 1px solid #e8e8e8;
+            color: #1f1f1f !important;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .btn-nav-logout:hover {
+            background-color: #f8f8f8;
+        }
+
+        .nav-tabs-custom {
+            display: flex;
+            gap: 12px;
+            padding: 0;
+            margin-bottom: 24px;
+            list-style: none;
+            border-bottom: 1px solid #edf1f7;
+            padding-bottom: 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .nav-tabs-custom .nav-link {
+            color: #666666;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-tabs-custom .nav-link:hover {
+            color: #000000;
+            background-color: #f3f3f3;
+        }
+        .nav-tabs-custom .nav-link.active {
+            color: #0c831f;
+            background-color: rgba(12, 131, 31, 0.1);
+            font-weight: 600;
+        }
+
+        .content-card {
+            background-color: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 16px !important;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #000000;
+            font-size: 1.3rem;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #666666;
+            border-bottom: 1px solid #edf1f7;
+            padding: 12px 8px;
+        }
+        .table td {
+            padding: 16px 8px;
+            border-bottom: 1px solid #edf1f7;
+        }
+
+        .badge-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .status-placed { background-color: #f0f7ff; color: #0284c7; }
+        .status-received { background-color: #f5f0ff; color: #6b21a8; }
+        .status-delivered { background-color: #fff9e6; color: #da9100; }
+        .status-paid { background-color: #f1fff4; color: #0c831f; border: 1px solid #d4f5dd; }
+        .status-completed { background-color: #1f1f1f; color: #ffffff; }
+        .status-default { background-color: #f3f3f3; color: #666666; }
+
+        .btn-action-outline {
+            border: 1px solid #0c831f;
+            color: #0c831f;
+            background: transparent;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-action-outline:hover {
+            background-color: #0c831f;
+            color: #ffffff;
+        }
+
+        .global-footer {
+            background-color: #ffffff;
+            color: #666666;
+            padding: 24px 0;
+            font-size: 0.9rem;
+            border-top: 1px solid #edf1f7;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar global-nav">
+        <div class="container">
+            <a class="navbar-brand" href="/canteen/dashboard">Desk<span>2</span>Dine</a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="navbar-text text-muted small fw-medium">Canteen Portal (Admin)</span>
+                <a href="/logout" class="btn-nav-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4" style="max-width: 900px;">
+        
+        <ul class="nav-tabs-custom">
+            <li class="nav-item"><a class="nav-link" href="/canteen/dashboard">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/canteen/all-orders">All Orders</a></li>
+            <li class="nav-item"><a class="nav-link" href="/canteen/pending-orders">Pending Orders</a></li>
+            <li class="nav-item"><a class="nav-link" href="/canteen/manage-items">Manage Items</a></li>
+        </ul>
+
+        <div class="content-card">
+            <h4 class="section-title mb-4">Master Orders Ledger</h4>
             
-            <!-- Item Form Binding Matrix -->
-            <form th:action="@{/canteen/item/save}" th:object="${item}" method="POST">
-                
-                <!-- Item Name Input -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-muted">Item Name</label>
-                    <input type="text" th:field="*{name}" class="form-control rounded-3" placeholder="e.g. Pizza" required>
-                </div>
-                
-                <!-- Price Input -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-muted">Price (₹)</label>
-                    <input type="number" step="0.1" th:field="*{price}" class="form-control rounded-3" placeholder="110.0" required>
-                </div>
-                
-                <!-- Availability Status Checkbox -->
-                <div class="mb-4 form-check">
-                    <input type="checkbox" th:field="*{available}" class="form-check-input" id="avail">
-                    <label class="form-check-label fw-semibold text-muted" for="avail">Available for Ordering</label>
-                </div>
-                
-                <!-- Operation Triggers -->
-                <div class="d-flex align-items-center">
-                    <button type="submit" class="btn btn-primary px-4 rounded-3 fw-bold shadow-sm">Add Item</button>
-                    <a href="/canteen/manage-items" class="btn btn-link text-muted text-decoration-none ms-3">Cancel</a>
-                </div>
-                
-            </form>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Order Time</th>
+                            <th>Faculty Member</th>
+                            <th>Delivery Location</th>
+                            <th>Cost</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="o : ${orders}">
+                            <td class="fw-bold" th:text="${o.id}">11</td>
+                            <td class="text-muted small" th:text="${o.orderTime}">Time</td>
+                            <td class="fw-semibold text-dark" th:text="${o.facultyName}">Name</td>
+                            <td th:text="${o.deliveryLocation}">F-204</td>
+                            <td class="fw-bold" th:text="'₹ ' + ${o.totalAmount}">₹ 0.0</td>
+                            <td>
+                                <span class="badge-status text-uppercase" 
+                                      th:classappend="${o.status == 'COMPLETED' ? 'status-completed' : 
+                                                       (o.status == 'PAID' ? 'status-paid' : 
+                                                       (o.status == 'PLACED' ? 'status-placed' : 
+                                                       (o.status == 'DELIVERED' ? 'status-delivered' : 
+                                                       (o.status == 'RECEIVED' ? 'status-received' : 'status-default'))))}" 
+                                      th:text="${o.status}">STATUS</span>
+                            </td>
+                            <td>
+                                <a th:href="@{'/canteen/order-details/' + ${o.id}}" class="btn-action-outline">View Details</a>
+                            </td>
+                        </tr>
+                        
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="7" class="text-center text-muted py-4 small">No order records found in the database system logs.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <footer class="global-footer text-center">
+        <div class="container">
+            <span>© 2026 Desk2Dine Campus Automation Portal. All rights reserved.</span>
+        </div>
+    </footer>
 
 </body>
 </html>

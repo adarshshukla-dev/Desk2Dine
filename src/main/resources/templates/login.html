@@ -2,52 +2,173 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desk2Dine - Login Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Okra:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light d-flex align-items-center" style="height: 100vh;">
+    <style>
+        body {
+            font-family: 'Okra', sans-serif;
+            background-color: #ffffff;
+            color: #1f1f1f;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    <div class="container" style="max-width: 450px;">
-        <div class="card border-0 shadow-lg rounded-4 p-4 bg-white">
-            <div class="text-center mb-4">
-                <h3 class="fw-bold text-primary">Desk2Dine Portal</h3>
-                <small class="text-muted">MIT Meerut Food Logistics Interface</small>
+        .global-nav {
+            background-color: #ffffff;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf1f7;
+        }
+        .global-nav .navbar-brand {
+            color: #000000 !important;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+        .global-nav .navbar-brand span {
+            color: #fcae1a;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            background-color: #fcfbfa;
+        }
+
+        .login-card {
+            background-color: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 16px !important;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+        }
+
+        .portal-title {
+            font-weight: 800;
+            color: #000000;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #1f1f1f;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            color: #1f1f1f;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #0c831f;
+            box-shadow: none;
+        }
+
+        .btn-submit-solid {
+            background-color: #0c831f;
+            color: #ffffff !important;
+            font-weight: 700;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 12px rgba(12, 131, 31, 0.15);
+        }
+        .btn-submit-solid:hover {
+            background-color: #0b721b;
+        }
+
+        .link-action {
+            color: #0c831f;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .link-action:hover {
+            color: #0b721b;
+            text-decoration: underline;
+        }
+
+        .global-footer {
+            background-color: #ffffff;
+            color: #666666;
+            padding: 24px 0;
+            font-size: 0.9rem;
+            border-top: 1px solid #edf1f7;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar global-nav">
+        <div class="container">
+            <a class="navbar-brand" href="/">Desk<span>2</span>Dine</a>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="container d-flex flex-column align-items-center">
+            
+            <div class="login-card">
+                <div class="text-center mb-4">
+                    <h3 class="portal-title">Welcome Back</h3>
+                    <span class="text-muted small">MIT Meerut Food Logistics Interface</span>
+                </div>
+
+                <div th:if="${loginError != null}" class="alert alert-danger border-0 rounded-3 text-center small fw-semibold py-2 mb-3" th:text="${loginError}"></div>
+
+                <form th:action="@{/auth/login}" method="POST">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Select Portal Role</label>
+                        <select name="role" class="form-select" required>
+                            <option value="FACULTY">Faculty Portal (@mitmeerut.ac.in)</option>
+                            <option value="CANTEEN">Canteen Management Dashboard</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-control" placeholder="user@mitmeerut.ac.in" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit-solid w-100">Sign In</button>
+                </form>
             </div>
 
-            <!-- Login Error Notifications -->
-            <div th:if="${loginError != null}" class="alert alert-danger border-0 rounded-3 text-center small fw-semibold py-2" th:text="${loginError}"></div>
+            <div class="text-center mt-3">
+                <span class="text-muted small">New faculty member? </span>
+                <a href="/signup" class="link-action small">Create an account</a>
+            </div>
 
-            <form th:action="@{/auth/login}" method="POST">
-                
-                <!-- Role Dropdown Matrix Selection -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-muted">Select Portal Role</label>
-                    <select name="role" class="form-select rounded-3" required>
-                        <option value="FACULTY">Faculty Portal (@mitmeerut.ac.in)</option>
-                        <option value="CANTEEN">Canteen Management Dashboard</option>
-                    </select>
-                </div>
-
-                <!-- Email Form Field -->
-                <div class="mb-3">
-                    <label class="form-label fw-semibold text-muted">Email Address</label>
-                    <input type="email" name="email" class="form-control rounded-3" placeholder="user@mitmeerut.ac.in" required>
-                </div>
-
-                <!-- Password Form Field -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold text-muted">Password</label>
-                    <input type="password" name="password" class="form-control rounded-3" placeholder="••••••••" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 fw-bold shadow-sm">Sign In</button>
-            </form>
         </div>
-        <div class="text-center mt-3">
-    <span class="text-muted small">New faculty member? </span>
-    <a href="/signup" class="text-decoration-none small fw-bold">Create an account</a>
-      </div>
     </div>
+
+    <footer class="global-footer text-center">
+        <div class="container">
+            <span>© 2026 Desk2Dine Campus Automation Portal. All rights reserved.</span>
+        </div>
+    </footer>
 
 </body>
 </html>
