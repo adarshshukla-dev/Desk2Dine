@@ -25,11 +25,9 @@ public class Desk2DineController {
     @Autowired
     private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
-    // ================= ☁️ CLOUD DATABASE BOOTSTRAP INITIALIZER =================
     @PostConstruct
     public void initDatabaseSchemaAndData() {
         try {
-            // Render/Local environment check - Auto create tables if missing with wallet_balance field included
             jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS faculties (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "name TEXT, " +
@@ -43,14 +41,12 @@ public class Desk2DineController {
                     "price REAL, " +
                     "available INTEGER)");
 
-            // Default Faculty Account Data Injection with wallet_balance safety parameter
             Integer facultyCount = jdbcTemplate.queryForObject("SELECT count(*) FROM faculties WHERE email = ?", Integer.class, "amol.sharma@mitmeerut.ac.in");
             if (facultyCount == 0) {
                 jdbcTemplate.update("INSERT INTO faculties (name, email, password, wallet_balance) VALUES (?, ?, ?, ?)", 
                         "Amol Sharma", "amol.sharma@mitmeerut.ac.in", "password123", 0.0);
             }
 
-            // Default Menu Dataset Injection
             Integer menuCount = jdbcTemplate.queryForObject("SELECT count(*) FROM canteen_menu_items", Integer.class);
             if (menuCount == 0) {
                 jdbcTemplate.update("INSERT INTO canteen_menu_items (name, price, available) VALUES (?, ?, ?)", "Tea", 10.0, 1);
@@ -64,16 +60,12 @@ public class Desk2DineController {
         }
     }
 
-    // ================= 🏠 PUBLIC HOME & BRAND LANDING PAGE =================
-
     @GetMapping("/")
     public String indexPage(HttpSession session) {
         if (session.getAttribute("scopedFaculty") != null) return "redirect:/place-order";
         if (session.getAttribute("canteenLoggedIn") != null) return "redirect:/canteen/dashboard";
         return "index";
     }
-
-    // ================= 🔑 REAL DATABASE AUTHENTICATION =================
 
     @GetMapping("/login")
     public String loginPage() { 
@@ -95,7 +87,17 @@ public class Desk2DineController {
             return "signup";
         }
         try {
-            // FIXED: Added wallet_balance query parameter to satisfy NOT NULL database rule constraint
+            Integer existingCount = jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM faculties WHERE LOWER(email) = LOWER(?)", 
+                Integer.class, 
+                email
+            );
+            
+            if (existingCount != null && existingCount > 0) {
+                model.addAttribute("signupError", "Registration Denied! An account with this email address already exists.");
+                return "signup";
+            }
+
             String sql = "INSERT INTO faculties (name, email, password, wallet_balance) VALUES (?, ?, ?, ?)";
             jdbcTemplate.update(sql, name, email, password, 0.0);
             
@@ -156,8 +158,6 @@ public class Desk2DineController {
         session.invalidate(); 
         return "redirect:/"; 
     }
-
-    // ================= FACULTY PORTAL FLOW =================
 
     @GetMapping("/place-order")
     public String placeOrderPage(Model model, HttpSession session) {
@@ -291,8 +291,6 @@ public class Desk2DineController {
         return "order-details-received"; 
     }
 
-    // ================= 🏪 CANTEEN PORTAL FLOW =================
-
     @GetMapping("/canteen/dashboard")
     public String canteenDashboard(Model model, HttpSession session) {
         if (session.getAttribute("canteenLoggedIn") == null) return "redirect:/login";
@@ -391,8 +389,6 @@ public class Desk2DineController {
         return "redirect:/canteen/dashboard"; 
     }
 
-    // ================= CANTEEN PORTAL INVENTORY MANAGEMENT =================
-
     @GetMapping("/canteen/manage-items") 
     public String manageItems(@RequestParam(value = "search", required = false) String search, Model model, HttpSession session) { 
         if (session.getAttribute("canteenLoggedIn") == null) return "redirect:/login";
@@ -444,7 +440,46 @@ public class Desk2DineController {
         return "redirect:/canteen/manage-items"; 
     }
 
-    // ================= ITEM LOGISTICS STRUCT MODEL FORM DATA BOUND =================
+    @GetMapping("/canteen/edit-item/{id}")
+    public String showEditItemPage(@PathVariable("id") Long id, Model model, HttpSession session) {
+        if (session.getAttribute("canteenLoggedIn") == null) return "redirect:/login";
+        String sql = "SELECT id, name, price, available FROM canteen_menu_items WHERE id = ?";
+        try {
+            Map<String, Object> row = jdbcTemplate.queryForMap(sql, id);
+            ItemFormWrapper item = new ItemFormWrapper();
+            item.setId(((Number) row.get("id")).longValue());
+            item.setName((String) row.get("name"));
+            item.setPrice(((Number) row.get("price")).doubleValue());
+            
+            Object availObj = row.get("available");
+            boolean isAvail = false;
+            if (availObj instanceof Number) {
+                isAvail = ((Number) availObj).intValue() == 1;
+            } else if (availObj instanceof Boolean) {
+                isAvail = (Boolean) availObj;
+            }
+            item.setAvailable(isAvail);
+            
+            model.addAttribute("item", item);
+            return "edit-item";
+        } catch (Exception e) {
+            return "redirect:/canteen/manage-items?error=notfound";
+        }
+    }
+
+    @PostMapping("/canteen/item/update")
+    public String updateItemData(@ModelAttribute("item") ItemFormWrapper updatedItem, HttpSession session) {
+        if (session.getAttribute("canteenLoggedIn") == null) return "redirect:/login";
+        String sql = "UPDATE canteen_menu_items SET name = ?, price = ?, available = ? WHERE id = ?";
+        jdbcTemplate.update(sql, 
+            updatedItem.getName(), 
+            updatedItem.getPrice(), 
+            updatedItem.isAvailable() ? 1 : 0, 
+            updatedItem.getId()
+        );
+        return "redirect:/canteen/manage-items";
+    }
+
     public static class ItemFormWrapper {
         private long id; 
         private String name = ""; 

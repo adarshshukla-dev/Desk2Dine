@@ -13,7 +13,6 @@ public class Feedback {
     private int rating; 
     private String comments;
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getOrderId() { return orderId; }

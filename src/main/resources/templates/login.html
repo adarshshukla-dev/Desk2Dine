@@ -127,7 +127,7 @@
             <div class="login-card">
                 <div class="text-center mb-4">
                     <h3 class="portal-title">Welcome Back</h3>
-                    <span class="text-muted small">MIT Meerut Food Logistics Interface</span>
+                    <span class="text-muted small">E-Canteen MIT Meerut</span>
                 </div>
 
                 <div th:if="${loginError != null}" class="alert alert-danger border-0 rounded-3 text-center small fw-semibold py-2 mb-3" th:text="${loginError}"></div>
@@ -137,14 +137,14 @@
                     <div class="mb-3">
                         <label class="form-label">Select Portal Role</label>
                         <select name="role" class="form-select" required>
-                            <option value="FACULTY">Faculty Portal (@mitmeerut.ac.in)</option>
-                            <option value="CANTEEN">Canteen Management Dashboard</option>
+                            <option value="FACULTY">Faculty Portal</option>
+                            <option value="CANTEEN">Canteen Dashboard</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Email Address</label>
-                        <input type="email" name="email" class="form-control" placeholder="user@mitmeerut.ac.in" required>
+                        <input type="email" name="email" class="form-control" placeholder="Enter your valid email" required>
                     </div>
 
                     <div class="mb-4">
@@ -166,7 +166,7 @@
 
     <footer class="global-footer text-center">
         <div class="container">
-            <span>© 2026 Desk2Dine Campus Automation Portal. All rights reserved.</span>
+            <span>© 2026 Desk2Dine Campus Canteen Portal. All rights reserved.</span>
         </div>
     </footer>
 

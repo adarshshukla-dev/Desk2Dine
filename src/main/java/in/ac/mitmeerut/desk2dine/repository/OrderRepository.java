@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
-    // Faculty user ke specific orders sorted order mein laane ke liye query layer
+public interface OrderRepository extends JpaRepository<Order, Long> 
+{
     List<Order> findByFacultyNameOrderByIdDesc(String facultyName);
 }

@@ -10,8 +10,8 @@ public class Desk2DineDialect extends Dialect {
     }
 
     @Override
-    public DatabaseVersion getVersion() {
-        // Hibernate 7 ke signature ke mutabik version object return kar rahe hain
+    public DatabaseVersion getVersion() 
+    {
         return DatabaseVersion.make(3);
     }
 }
